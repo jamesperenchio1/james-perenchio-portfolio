@@ -24,7 +24,7 @@ export function Contact() {
         <div className="grid gap-10 md:grid-cols-2">
           <div>
             <p className="mb-6 text-lg leading-relaxed text-foreground">
-              Have a security, infrastructure, or product problem in mind? I’m always curious about work where reliability and security overlap.
+              Have a security or infrastructure challenge in mind? I’m open to roles where reliability, access control, and risk management overlap.
             </p>
             <p className="text-muted">
               Reach me directly at{" "}

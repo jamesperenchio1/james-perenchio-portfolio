@@ -1,11 +1,11 @@
 export const site = {
   name: "James Perenchio",
-  role: "IT & infrastructure, leaning hard into security",
+  role: "Information Security · IT Infrastructure",
   location: "Bangkok, Thailand · U.S. citizen",
   hero: {
-    headline: "I build systems, then I try to break them.",
+    headline: "Security, built from the infrastructure up.",
     subline:
-      "IT and infrastructure by trade, security by obsession. I've shipped an AI assistant strangers actually use, run a zero-trust homelab on hardware that sips power, and built and registered a beverage company from the recipe to the payment webhook. I like problems where 'make it work' and 'make it hard to break' are the same task. Bangkok-based, U.S. citizen, comfortable across the whole stack.",
+      "Infrastructure engineer moving into information security. My work sits at the overlap of keeping systems running and keeping access controlled — authentication, encryption, webhook integrity, zero-trust networking, and identity governance in regulated environments. Bangkok-based, U.S. citizen.",
   },
   about:
     "Systems and infrastructure professional moving into information security, backed by hands-on applied security engineering (authentication, encryption, webhook integrity, zero-trust access control) and day-to-day management of endpoints, identities, and export-controlled data in a regulated aerospace environment. Self-directed offensive and defensive-security practitioner (Hack The Box; self-hosted SSO-gated homelab). Well suited to a global security role, and ready to take formal ownership of incident response, identity, and access governance.",
