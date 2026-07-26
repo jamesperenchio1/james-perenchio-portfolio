@@ -8,27 +8,26 @@ export function Highlights({
   items: { title: string; body: string }[];
 }) {
   return (
-    <div className="my-10 grid gap-4 md:grid-cols-2">
+    <div className="not-prose my-8 grid gap-3 md:grid-cols-2">
       {items.map((item, i) => (
         <motion.div
           key={i}
-          initial={{ opacity: 0.85, y: 8 }}
+          initial={{ opacity: 0.9, y: 6 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{
-            duration: 0.4,
-            delay: i * 0.08,
+            duration: 0.35,
+            delay: i * 0.06,
             ease: [0.22, 1, 0.36, 1],
           }}
-          className="group rounded-xl border p-5 transition duration-300 hover:-translate-y-1"
+          className="rounded-lg border p-4 transition hover:border-[var(--accent)]"
           style={{
             borderColor: "var(--border)",
-            backgroundColor: "var(--bg)",
-            boxShadow: "0 0 0 0 transparent",
+            backgroundColor: "var(--surface)",
           }}
         >
           <h4
-            className="mb-2 font-display text-base font-semibold"
+            className="mb-1 text-sm font-semibold"
             style={{ color: "var(--accent)" }}
           >
             {item.title}

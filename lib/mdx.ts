@@ -22,6 +22,7 @@ export type ProjectFrontmatter = {
   name: string;
   kind: string;
   tagline: string;
+  contribution: string;
   order: number;
   featured?: boolean;
   stack: string[];

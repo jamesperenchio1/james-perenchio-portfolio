@@ -40,7 +40,7 @@ body {
 }
 
 .project-theme .prose {
-  max-width: 70ch;
+  max-width: 68ch;
 }
 
 .project-theme .prose p,
@@ -55,8 +55,9 @@ body {
 .project-theme .prose a {
   color: var(--accent);
   text-decoration: underline;
-  text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  text-decoration-color: color-mix(in srgb, var(--accent) 35%, transparent);
   text-underline-offset: 0.2em;
+  font-weight: 500;
   transition: text-decoration-color 0.2s ease;
 }
 
@@ -72,19 +73,21 @@ body {
 }
 
 .project-theme .prose h2 {
-  font-size: 1.5rem;
-  line-height: 1.25;
-  margin-top: 2.5rem;
-  margin-bottom: 1rem;
+  font-size: 1.75rem;
+  line-height: 1.2;
+  margin-top: 3rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
   font-weight: 600;
   letter-spacing: -0.02em;
 }
 
 .project-theme .prose h3 {
   font-size: 1.25rem;
-  line-height: 1.3;
-  margin-top: 2rem;
-  margin-bottom: 0.75rem;
+  line-height: 1.35;
+  margin-top: 2.25rem;
+  margin-bottom: 0.875rem;
   font-weight: 600;
 }
 
@@ -97,11 +100,11 @@ body {
 .project-theme .prose ol {
   margin-top: 1rem;
   margin-bottom: 1.5rem;
-  padding-left: 1.5rem;
+  padding-left: 1.25rem;
 }
 
 .project-theme .prose li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.625rem;
   line-height: 1.7;
 }
 
