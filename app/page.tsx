@@ -5,6 +5,7 @@ import { SectionReveal } from "@/components/SectionReveal";
 import { Certs } from "@/components/Certs";
 import { Contact } from "@/components/Contact";
 import { Assistant } from "@/components/Assistant";
+import { AnimatedHero, AnimatedText } from "@/components/AnimatedHero";
 import { Github, FileText } from "lucide-react";
 
 export default function Home() {
@@ -12,13 +13,13 @@ export default function Home() {
 
   return (
     <>
-      <section className="mx-auto max-w-[1040px] px-6 pb-16 pt-20 md:pt-28">
-        <SectionReveal>
+      <section className="relative mx-auto max-w-[1040px] px-6 pb-16 pt-20 md:pt-28">
+        <AnimatedHero>
           <p className="mb-4 font-mono text-sm font-medium uppercase tracking-widest text-muted">
             {site.role}
           </p>
           <h1 className="mb-6 font-display text-4xl font-semibold leading-tight tracking-tight text-foreground md:text-6xl">
-            {site.hero.headline}
+            <AnimatedText text={site.hero.headline} />
           </h1>
           <p className="mb-8 max-w-2xl text-lg leading-relaxed text-muted md:text-xl">
             {site.hero.subline}
@@ -49,9 +50,9 @@ export default function Home() {
               Download résumé
             </a>
           </div>
-        </SectionReveal>
+        </AnimatedHero>
 
-        <SectionReveal delay={0.15}>
+        <SectionReveal delay={0.2}>
           <div className="mt-16 rounded-2xl border border-border bg-surface p-6 md:p-8">
             <h2 className="mb-3 font-display text-xl font-semibold text-foreground">
               Approach

@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllProjects, getProjectBySlug } from "@/lib/mdx";
 import { site } from "@/content/site";
+import { ProjectBackground } from "@/components/ProjectBackground";
+import { ScrollProgress } from "@/components/ScrollProgress";
 import { ArrowLeft, ExternalLink, Github, Play } from "lucide-react";
 
 export async function generateStaticParams() {
@@ -42,7 +44,7 @@ function ProjectLink({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition hover:-translate-y-0.5 hover:shadow-lg"
+      className="group inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition hover:-translate-y-0.5 hover:shadow-lg"
       style={{
         borderColor: "var(--border)",
         color: "var(--text)",
@@ -52,6 +54,20 @@ function ProjectLink({
       <Icon size={16} />
       {label}
     </a>
+  );
+}
+
+function AnimatedDivider() {
+  return (
+    <div className="my-8 h-px w-full overflow-hidden rounded-full" style={{ backgroundColor: "var(--border)" }}>
+      <div
+        className="h-full w-1/3 animate-[shimmer_2s_ease-in-out_infinite]"
+        style={{
+          background: `linear-gradient(90deg, transparent, var(--accent), transparent)`,
+          opacity: 0.4,
+        }}
+      />
+    </div>
   );
 }
 
@@ -83,14 +99,21 @@ export default async function ProjectPage({
   } as React.CSSProperties;
 
   return (
-    <div className="project-theme min-h-screen" style={style}>
-      <div className="mx-auto max-w-[1040px] px-6 pb-24 pt-16">
+    <div className="project-theme relative min-h-screen overflow-hidden" style={style}>
+      <ProjectBackground slug={slug} />
+
+      <ScrollProgress color={t.accent} />
+
+      <div className="relative mx-auto max-w-[1080px] px-6 pb-24 pt-16">
         <Link
           href="/#work"
-          className="mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition hover:-translate-y-0.5"
+          className="group mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition hover:-translate-y-0.5"
           style={{ borderColor: "var(--border)", color: "var(--muted)" }}
         >
-          <ArrowLeft size={16} />
+          <ArrowLeft
+            size={16}
+            className="transition-transform group-hover:-translate-x-0.5"
+          />
           Back to work
         </Link>
 
@@ -106,13 +129,13 @@ export default async function ProjectPage({
             {project.kind}
           </span>
           <h1
-            className="mb-4 text-4xl font-semibold tracking-tight md:text-6xl"
+            className="mb-4 text-4xl font-semibold tracking-tight md:text-6xl lg:text-7xl"
             style={{ fontFamily: t.display, color: "var(--text)" }}
           >
             {project.name}
           </h1>
           <p
-            className="mb-6 max-w-2xl text-xl leading-relaxed"
+            className="mb-6 max-w-2xl text-xl leading-relaxed md:text-2xl"
             style={{ color: "var(--muted)" }}
           >
             {project.tagline}
@@ -122,7 +145,7 @@ export default async function ProjectPage({
             {project.stack.map((tech) => (
               <span
                 key={tech}
-                className="rounded-md border px-2.5 py-1 text-xs"
+                className="rounded-md border px-2.5 py-1 text-xs transition hover:-translate-y-0.5"
                 style={{
                   borderColor: "var(--border)",
                   color: "var(--muted)",
@@ -154,6 +177,8 @@ export default async function ProjectPage({
         >
           <MDXContent />
         </article>
+
+        <AnimatedDivider />
 
         <div className="mt-16 text-center">
           <Link

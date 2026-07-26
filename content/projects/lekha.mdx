@@ -36,6 +36,15 @@ demo. It's an autonomous agent with hands, exposed to the open internet, which m
 real engineering wasn't the conversation. It was making the whole thing safe to hand to
 strangers.
 
+<Highlights
+  items={[
+    { title: "Public multi-user agent", body: "Live on LINE with real Gmail, Calendar, and Drive actions — not a prototype behind a login." },
+    { title: "Webhook integrity", body: "HMAC-SHA256 verification on every inbound request, compared in constant time." },
+    { title: "Secrets encrypted", body: "Google refresh tokens stored with AES-256-GCM at rest." },
+    { title: "Explicit confirmations", body: "Emails and other consequential actions require user approval before sending." },
+  ]}
+/>
+
 ## The challenge
 
 An assistant that can send email and edit your calendar is only ever as trustworthy as the
@@ -94,6 +103,5 @@ to run deferred and scheduled work — reminders, queued actions — reliably an
 path. The tool layer wraps Google Calendar, Drive, and Gmail; multimodal input (photos, voice
 memos) is handled inline so you can just send a picture or talk to it.
 
-The result is an assistant that feels effortless to use and is deliberately hard to abuse —
-which, to me, is the whole point. "Make it work" and "make it hard to break" were the same
-task.
+The result is an assistant that feels effortless to use and is deliberately constrained —
+which, to me, is the whole point. Useful agents need boundaries.

@@ -29,6 +29,15 @@ It also runs on deliberately modest hardware. This isn't a rack of servers — i
 low-power **Intel N150**, fully headless, 100% Linux. Part of the exercise is proving that
 a rigorous zero-trust setup doesn't require expensive gear; it requires the right architecture.
 
+<Highlights
+  items={[
+    { title: "No open ports", body: "All services reach the internet through a Cloudflare Tunnel; the router forwards nothing inbound." },
+    { title: "Single sign-on gate", body: "Authentik forward-auth protects every service behind one identity provider." },
+    { title: "Out-of-band access", body: "New users are approved through a messaging workflow, not a standing open door." },
+    { title: "Low-power host", body: "Intel N150 headless Linux running Proxmox and Docker workloads." },
+  ]}
+/>
+
 ## The principle: zero trust
 
 Zero trust means no service is reachable simply because you're "on the network." Every
