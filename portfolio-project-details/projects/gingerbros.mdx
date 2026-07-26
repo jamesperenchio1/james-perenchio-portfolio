@@ -1,0 +1,66 @@
+---
+slug: gingerbros
+name: GingerBros
+kind: "Product · Secure Commerce"
+tagline: "A registered beverage brand where I own the product, the brand, and the checkout."
+order: 3
+stack: [Stripe, PromptPay, Web / e-commerce]
+links:
+  live: https://gingerbrosshop.com
+  demo: https://www.instagram.com/drinkgingerbros/
+theme:
+  bg: "#F3E4C4"
+  surface: "#fbf3e2"
+  border: "#e2c99b"
+  text: "#141210"
+  muted: "#6b5a3e"
+  accent: "#DD6B1A"
+  accentText: "#fff7ec"
+  display: "'Fraunces', serif"
+  mono: "'IBM Plex Mono', monospace"
+---
+
+## Overview
+
+GingerBros started as a homebrewing experiment and became a **registered Thai company**
+making craft, naturally-fermented, non-alcoholic ginger beer. It's the project where I own
+the entire chain end to end: the recipe and production, the brand and label design, the
+storefront, and the payment plumbing underneath. From the raw ginger to the payment webhook,
+it's all mine.
+
+## Full ownership, end to end
+
+Most people who build a store don't make the product; most people who make a product don't
+build the store. GingerBros is both, and running the whole thing myself is exactly what makes
+it a good engineering project rather than just a business — every layer is a decision I had
+to make and live with.
+
+- **The product:** a craft, naturally-fermented, non-alcoholic ginger beer.
+- **The brand:** name, label, and identity (see it on [Instagram](https://www.instagram.com/drinkgingerbros/)).
+- **The company:** a properly registered Thai entity.
+- **The commerce stack:** the storefront and everything behind the "buy" button.
+
+## Doing payments right
+
+The part I care about most as an engineer is handling money correctly and safely.
+
+**Card data never touches my servers.** The storefront and checkout run on **Stripe**, which
+handles cardholder data as a PCI-DSS-compliant processor. That's a deliberate security
+decision, not a convenience one: the safest way to handle card data is to architect the
+system so that *you never handle it in the first place*. Keeping card data entirely off my
+infrastructure keeps my PCI compliance scope to an absolute minimum and removes an entire
+category of risk.
+
+**Every payment confirmation is verified before it's trusted.** Payment results come back as
+Stripe **webhooks**, and every incoming webhook has its signature verified before my system
+acts on it. That means a forged "payment succeeded" call can't trick the store into treating
+an order as paid. This matters especially for Thai **PromptPay** payments, which settle
+asynchronously — the confirmation arrives separately from the checkout, so trusting the
+right signal, and only the right signal, is what keeps orders honest.
+
+## The takeaway
+
+GingerBros is proof I can take something from zero to a real, revenue-capable product — and
+that even on a small craft brand, I build the money path the same way I'd build anything
+security-sensitive: minimize what you're responsible for, verify what you're told, and never
+trust an unauthenticated message.

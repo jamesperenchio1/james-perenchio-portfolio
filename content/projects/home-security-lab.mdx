@@ -1,0 +1,73 @@
+---
+slug: home-security-lab
+name: Home Security Lab
+kind: "Infrastructure · Zero Trust"
+tagline: "Self-hosted infrastructure where nothing is exposed and nothing is trusted by default."
+order: 2
+stack: [Proxmox, Authentik, Cloudflare Tunnel, Docker, Linux]
+links: {}
+theme:
+  bg: "#070b08"
+  surface: "#0f150f"
+  border: "#1f3a29"
+  text: "#d6f5e3"
+  muted: "#6f9a80"
+  accent: "#35d07f"
+  accentText: "#04140b"
+  display: "'IBM Plex Mono', monospace"
+  mono: "'IBM Plex Mono', monospace"
+---
+
+## Overview
+
+My home lab is where I practice the defensive side of security on infrastructure I fully
+own and control. It runs a real stack of self-hosted services for daily use — but the point
+isn't the services, it's the access model in front of them. The whole thing is built on one
+rule: **nothing is exposed, and nothing is trusted by default.**
+
+It also runs on deliberately modest hardware. This isn't a rack of servers — it's a
+low-power **Intel N150**, fully headless, 100% Linux. Part of the exercise is proving that
+a rigorous zero-trust setup doesn't require expensive gear; it requires the right architecture.
+
+## The principle: zero trust
+
+Zero trust means no service is reachable simply because you're "on the network." Every
+request has to prove who it belongs to first. There's no soft interior — being inside buys
+you nothing. That principle drove every decision below.
+
+## The access path
+
+<Diagram />
+
+**No open ports.** Nothing is published by forwarding ports on the router. Every service is
+reachable only through a **Cloudflare Tunnel**, which makes an outbound connection from inside
+the network. From the public internet there are simply no inbound ports to scan, probe, or
+attack — the usual front door doesn't exist.
+
+**Single sign-on in front of everything.** **Authentik** sits as a forward-auth proxy ahead
+of *every single service*. Before a request is allowed through to any app, Authentik has to
+authenticate it. That centralizes identity into one place: one set of accounts, one policy
+surface, one place to allow or revoke a person's access across the whole lab.
+
+**Access is granted deliberately, out of band.** Letting someone in isn't a standing open
+door — it's an explicit, per-user approval handled through a messaging-app workflow, so I can
+allow or deny access on demand rather than leaving anything permanently open.
+
+## What runs behind it
+
+Behind that access layer is a genuine, useful stack on a **Proxmox** host, all in Docker:
+
+- **Nextcloud** — self-hosted files and collaboration
+- **Immich** — a private, self-hosted photo library
+- **Grafana** — dashboards and monitoring
+- plus other Docker workloads
+
+Everything sits behind the same zero-trust front door, so adding a service never means
+opening a new hole — it inherits the tunnel and the SSO automatically.
+
+## Why it matters
+
+This is the counterpart to the offensive practice I do on Hack The Box: somewhere to build
+and defend real infrastructure, make deliberate trade-offs, and live with the consequences.
+It's the difference between reading about forward-auth, tunnels, and least-privilege access
+and actually running them every day.

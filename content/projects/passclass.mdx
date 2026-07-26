@@ -1,0 +1,67 @@
+---
+slug: passclass
+name: PassClass
+kind: "AI · Data Privacy"
+tagline: "Turn a semester of lectures into summaries and quizzes — grounded in the lecturer's own material."
+order: 4
+stack: [Python, AWS S3, AWS Textract, AWS Transcribe, Confluence, OpenAI, Redactive, Flask]
+links:
+  demo: https://youtu.be/-VDAegLxrdY
+  code: https://github.com/keno-tech/PassClass
+theme:
+  bg: "#fbfbf7"
+  surface: "#ffffff"
+  border: "#e4e6df"
+  text: "#1f2a3a"
+  muted: "#5f6b7a"
+  accent: "#2f6bd8"
+  accentText: "#ffffff"
+  display: "'Fraunces', serif"
+  mono: "'IBM Plex Mono', monospace"
+---
+
+## Overview
+
+PassClass turns a semester of lectures into study material. Feed it lecture videos and slide
+decks and it produces digestible summaries plus a built-in quizzing function to test yourself
+against — all grounded in the lecturer's *actual* material rather than the open internet.
+
+It was built at a hackathon and won **Best Use of Redactive AI at UniHack 2024**. I worked
+on it as part of the team.
+
+## How it works
+
+The pipeline takes messy, mixed-media course content and turns it into a clean, queryable
+knowledge base:
+
+- **Audio → text** with **AWS Transcribe**, so spoken lectures become searchable text.
+- **Slides → text** with **AWS Textract**, pulling the content out of decks and PDFs.
+- **Storage** on **AWS S3** for the raw and processed material.
+- **Knowledge base** in **Confluence**, which holds the structured, extracted content.
+- **Front end** in **Flask** — a simple interface to summarize and quiz.
+
+On top of that sits the language model that writes the summaries and generates quiz questions.
+
+## The part that won the award: privacy by design
+
+The obvious way to build this is to shovel all the lecture content straight into a general
+LLM and ask it for summaries. That's also the wrong way — it hands proprietary university
+material wholesale to a third-party model.
+
+PassClass does it differently. It uses **Redactive's permission-aware RAG** to retrieve only
+the relevant chunks of the lecturer's material and feed *just those* to the model. Two things
+fall out of that decision:
+
+- **Answers stay grounded.** Responses are anchored in the lecturer's real content, not the
+  model's general knowledge, so they're accurate to the course.
+- **Data stays controlled.** Because retrieval is permission-aware and scoped, proprietary
+  content isn't dumped indiscriminately into an open third-party LLM.
+
+It's a small but real privacy-by-design decision — and it's exactly what the project was
+recognized for.
+
+## Stack
+
+Python throughout, AWS (S3 / Textract / Transcribe) for ingestion, Confluence as the
+datastore, OpenAI for generation, Redactive for permission-aware retrieval, and Flask for
+the interface.

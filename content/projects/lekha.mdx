@@ -1,0 +1,99 @@
+---
+slug: lekha
+name: Lekha
+kind: "AI · Application Security"
+tagline: "An AI assistant that lives inside LINE — and a case study in securing an autonomous agent."
+order: 1
+featured: true
+stack: [TypeScript, Next.js, Vercel AI SDK, Gemini, Upstash Redis, QStash]
+links:
+  live: https://lekha-iota.vercel.app
+  code: https://github.com/assistantforyou/lekha
+theme:
+  bg: "#0a0b12"
+  surface: "#14121f"
+  border: "#2a2350"
+  text: "#EAE8FF"
+  muted: "#9d97c9"
+  accent: "#7c6bff"
+  accentText: "#0a0620"
+  display: "'Space Grotesk', sans-serif"
+  mono: "'IBM Plex Mono', monospace"
+---
+
+## Overview
+
+Lekha is a personal AI assistant you add on LINE the same way you'd add a friend. In plain
+language it remembers things for you, sets reminders, reads photos and voice memos, manages
+your Google Calendar and Drive, and can even send email from your own Gmail. There's no app
+to install and no dashboard to learn — the entire product lives inside a chat thread you
+already use every day.
+
+It's live and **public**: anyone can add it, connect their own Google account, and start
+using it. That single decision — public, multi-user, and capable of taking real actions on
+your behalf — is what makes Lekha interesting from a security standpoint. It isn't a chatbot
+demo. It's an autonomous agent with hands, exposed to the open internet, which means the
+real engineering wasn't the conversation. It was making the whole thing safe to hand to
+strangers.
+
+## The challenge
+
+An assistant that can send email and edit your calendar is only ever as trustworthy as the
+controls wrapped around it. The moment an LLM can trigger side effects, three questions stop
+being academic:
+
+- Can I trust that a request actually came from the user it claims to be from?
+- Can the user's identity be spoofed, or the model talked into acting as someone else?
+- What stops a bad instruction — or a bad day for the model — from doing something irreversible?
+
+Lekha's architecture is my answer to those three questions. The theme throughout is
+**identity, integrity, and least privilege**.
+
+## Security architecture
+
+**Trust at the edge — webhook integrity.**
+Every inbound request (from LINE, and from the QStash job queue) carries a cryptographic
+signature. Before Lekha does *any* work, it verifies that signature — HMAC-SHA256, computed
+over the exact raw request body, compared in constant time so the check can't be probed with
+timing. A forged or tampered request fails verification and is dropped before it ever reaches
+application logic. Nothing downstream runs on unauthenticated input.
+
+**Identity it can't be talked out of.**
+The user's identity is derived from the *verified webhook*, never from anything the model
+says or infers. The LLM can't be socially engineered — or prompt-injected — into believing
+it's talking to a different person, because identity is established cryptographically before
+the model is even in the loop. The model operates inside an identity it doesn't get a vote on.
+
+**Secrets at rest.**
+Connecting your Google account means Lekha holds a long-lived refresh token — one of the most
+sensitive things a system can store. Those tokens are encrypted at rest with **AES-256-GCM**,
+so a database compromise doesn't hand an attacker standing access to users' Google accounts.
+
+**A hardened OAuth flow.**
+The Google connection flow is built against CSRF and replay from the start: single-use,
+signed links and short-lived, server-side nonces mean an intercepted or reused authorization
+link is worthless. You can only complete the connection you actually started, once.
+
+**Guardrails on every consequential action.**
+Anything with real-world consequences — sending an email, in particular — is never executed
+straight from a model turn. It's drafted, queued, and gated behind an **explicit confirmation**:
+the exact content is shown back to you verbatim, and nothing goes out until you say yes.
+On top of that sit per-user rate limiting and webhook replay de-duplication, so a stuck retry
+or a flood of requests can't turn into a flood of actions.
+
+**Isolation between users.**
+Because it's public, every user is walled off: isolated memory, their own connected Google
+account, and individual rate limits. One person's data and permissions never bleed into
+another's.
+
+## How it's built
+
+Lekha is a TypeScript app on Next.js, deployed on Vercel. It uses the Vercel AI SDK to
+orchestrate the model (Gemini), Upstash Redis for fast per-user state and memory, and QStash
+to run deferred and scheduled work — reminders, queued actions — reliably and off the request
+path. The tool layer wraps Google Calendar, Drive, and Gmail; multimodal input (photos, voice
+memos) is handled inline so you can just send a picture or talk to it.
+
+The result is an assistant that feels effortless to use and is deliberately hard to abuse —
+which, to me, is the whole point. "Make it work" and "make it hard to break" were the same
+task.
