@@ -5,6 +5,7 @@ import { SectionReveal } from "@/components/SectionReveal";
 import { Certs } from "@/components/Certs";
 import { Contact } from "@/components/Contact";
 import { Assistant } from "@/components/Assistant";
+import { Experience } from "@/components/Experience";
 import { AnimatedHero, AnimatedText } from "@/components/AnimatedHero";
 import { Github, FileText } from "lucide-react";
 
@@ -85,6 +86,7 @@ export default function Home() {
         </div>
       </section>
 
+      <Experience />
       <Certs />
       <Contact />
       <Assistant />
