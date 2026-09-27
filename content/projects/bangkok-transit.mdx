@@ -32,6 +32,10 @@ marked, everything else fades out, and your live location stays on screen the wh
 For BTS stations it also shows live arrival times. It installs as a PWA, so it works like an
 app on your phone.
 
+<Figure caption="Every operating line rendered from real track geometry, 193 stations across BTS, MRT, the monorails, Airport Rail Link, and SRT Red.">
+  <img src="/projects/bangkok-transit/shot-1.jpg" alt="Bangkok Transit map showing the full rail network" style={{ width: "100%", height: "auto" }} />
+</Figure>
+
 <Highlights
   items={[
     { title: "Every operating line", body: "193 stations across BTS, MRT, the monorails, Airport Rail Link, and SRT Red." },
@@ -66,6 +70,10 @@ pair within about 400 meters, so there's no list of interchanges to maintain by 
 shortest-path search then finds the route, and transfer steps tell you which direction to
 board.
 
+<Figure caption="A computed route from Mo Chit to Siam, station by station, with a live next-arrival time at the destination.">
+  <img src="/projects/bangkok-transit/shot-3.jpg" alt="Bangkok Transit route panel showing a multi-stop trip with live arrival time" style={{ width: "100%", height: "auto" }} />
+</Figure>
+
 ## Live arrivals
 
 BTS arrival times come from an undocumented API that doesn't allow browser requests, so the
@@ -79,6 +87,10 @@ stations in the background, writing each one to Redis as it arrives. Concurrent 
 the same station are collapsed into a single upstream call. A scheduled GitHub Actions job
 also pings every station about every 12 minutes, so the first visitor after a quiet period
 doesn't hit a cold cache. The interval is set by Upstash's free-tier command limit.
+
+<Figure caption="Tapping a station surfaces its cached live arrival times, plus the Start/Destination picker.">
+  <img src="/projects/bangkok-transit/shot-2.jpg" alt="Bangkok Transit station popup with live arrival times" style={{ width: "100%", height: "auto" }} />
+</Figure>
 
 ## Stack
 

@@ -25,6 +25,42 @@ This was a one-day hackathon build: a small Python machine learning prototype fo
 trading that predicts demand and price movements. The aim was a working proof of concept that
 could read market signals and make a better call on when to buy or sell.
 
+<Figure caption="Illustration, not a screenshot — there's no live app for a one-day hackathon prototype.">
+  <svg viewBox="0 0 720 320" role="img" aria-label="Illustration of transmission towers and power lines under an amber sky, representing an electricity grid" style={{ width: "100%", height: "auto", display: "block" }}>
+    <defs>
+      <linearGradient id="amber-sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="var(--surface)" />
+        <stop offset="100%" stopColor="var(--bg)" />
+      </linearGradient>
+      <radialGradient id="amber-glow" cx="50%" cy="35%" r="65%">
+        <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.35" />
+        <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
+      </radialGradient>
+    </defs>
+    <rect x="0" y="0" width="720" height="320" fill="url(#amber-sky)" />
+    <rect x="0" y="0" width="720" height="320" fill="url(#amber-glow)" />
+    <path d="M40 250 Q180 190 320 250 T600 250 T720 230" fill="none" stroke="var(--accent)" strokeOpacity="0.5" strokeWidth="2" />
+    <path d="M40 270 Q180 210 320 270 T600 270 T720 250" fill="none" stroke="var(--accent)" strokeOpacity="0.3" strokeWidth="2" />
+    {[110, 320, 530].map((x) => (
+      <g key={x}>
+        <line x1={x} y1="120" x2={x} y2="270" stroke="var(--muted)" strokeWidth="4" />
+        <line x1={x - 46} y1="150" x2={x + 46} y2="150" stroke="var(--muted)" strokeWidth="4" />
+        <line x1={x - 34} y1="180" x2={x + 34} y2="180" stroke="var(--muted)" strokeWidth="4" />
+        <line x1={x - 46} y1="150" x2={x - 20} y2="120" stroke="var(--muted)" strokeWidth="3" />
+        <line x1={x + 46} y1="150" x2={x + 20} y2="120" stroke="var(--muted)" strokeWidth="3" />
+      </g>
+    ))}
+    <path d="M110 150 Q215 190 320 150" fill="none" stroke="var(--accent)" strokeWidth="2" />
+    <path d="M320 150 Q425 190 530 150" fill="none" stroke="var(--accent)" strokeWidth="2" />
+    <path d="M110 180 Q215 205 320 180" fill="none" stroke="var(--accent)" strokeOpacity="0.7" strokeWidth="2" />
+    <path d="M320 180 Q425 205 530 180" fill="none" stroke="var(--accent)" strokeOpacity="0.7" strokeWidth="2" />
+    {[165, 375].map((x, i) => (
+      <circle key={x} cx={x} cy={i === 0 ? 178 : 178} r="4" fill="var(--accent)" />
+    ))}
+    <rect x="0" y="270" width="720" height="50" fill="var(--bg)" />
+  </svg>
+</Figure>
+
 <Highlights
   items={[
     { title: "One-day build", body: "From scoping to a working prototype in a single hackathon session." },

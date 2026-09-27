@@ -33,6 +33,10 @@ needs an account, most people won't bother. So the app lets people contribute wi
 creating one, while still giving each person a stable identity that moderation, rate limits,
 and permissions can rely on.
 
+<Figure caption="The map view: nearby toilets ranked by distance, each with a crowdsourced cleanliness score.">
+  <img src="/projects/ratethetoilet/shot-1.jpg" alt="RateTheToilet map and nearby list view" style={{ width: "100%", height: "auto" }} />
+</Figure>
+
 <Highlights
   items={[
     { title: "No sign-up wall", body: "Your first post gets you an automatic handle backed by an anonymous Supabase auth user." },
@@ -59,6 +63,10 @@ that to mean a password. There are two options:
   are redeemed through an Edge Function running with the service role, which is the only thing
   allowed to read that table. The browser can never list them.
 
+<Figure caption="No sign-up wall — your first post gets you a fun, anonymous handle, backed by a real Supabase auth identity.">
+  <img src="/projects/ratethetoilet/shot-3.jpg" alt="RateTheToilet anonymous handle picker" style={{ width: "100%", height: "auto" }} />
+</Figure>
+
 ## Keeping an open platform clean
 
 Anyone can post, so abuse controls have to be enforced where users can't get around them:
@@ -73,6 +81,10 @@ Anyone can post, so abuse controls have to be enforced where users can't get aro
 - **Upload and input limits.** The photo bucket only accepts image types up to 15 MB, and
   free-text fields have length caps, which stops the storage from being used as a dumping
   ground.
+
+<Figure caption="Adding a toilet walks through content rules before publishing — posting stays open, but not unmoderated.">
+  <img src="/projects/ratethetoilet/shot-2.jpg" alt="RateTheToilet add-a-toilet flow with content rules" style={{ width: "100%", height: "auto" }} />
+</Figure>
 
 Ratings are crowdsourced too. Every toilet can have many ratings, each with a required overall
 score and optional details like cleanliness and smell, so one person's opinion doesn't become

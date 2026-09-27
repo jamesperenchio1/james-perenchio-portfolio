@@ -32,6 +32,10 @@ It's a full two-sided marketplace: listings with photos, offers and counter-offe
 messaging, seller reviews, watchlists, price alerts, notifications, and a dispute process. It
 runs in Thai and English.
 
+<Figure caption="The marketplace homepage, with fresh listings and a real price signal on each one.">
+  <img src="/projects/roots/shot-1.jpg" alt="Roots marketplace homepage" style={{ width: "100%", height: "auto" }} />
+</Figure>
+
 <Highlights
   items={[
     { title: "Escrow payments", body: "Card payments are held in escrow and released to the seller's Stripe Connect account when the order completes." },
@@ -52,11 +56,19 @@ At checkout, the buyer picks how to pay:
   platform doesn't touch the money, and the order moves forward on each side's
   confirmation.
 
+<Figure caption="A listing page: price history vs. the 30-day median, escrow protection, and a QR provenance tag.">
+  <img src="/projects/roots/shot-2.jpg" alt="Roots plant listing with escrow protection and price history" style={{ width: "100%", height: "auto" }} />
+</Figure>
+
 Orders then move through a fixed lifecycle: paid in escrow, shipped, delivered, completed,
 with branches for disputes, refunds, and cancellations. Sellers mark an order shipped with
 the courier, tracking number, and an optional photo of the packed box. For pickup orders, the
 public listing only shows a general area, and the exact GPS pin is revealed to the buyer after
 they've bought the plant.
+
+<Figure caption="Real per-species price history and trading volume, not just a list of current asking prices.">
+  <img src="/projects/roots/shot-3.jpg" alt="Roots market data price history chart" style={{ width: "100%", height: "auto" }} />
+</Figure>
 
 ## Auditing my own app
 

@@ -28,6 +28,10 @@ making craft, naturally fermented, non-alcoholic ginger beer. I handle all of it
 and production, the brand and label design, the online store, and the payment setup behind
 it. From the raw ginger to the payment webhook, it's mine.
 
+<Figure caption="The storefront homepage — recipe, brand, and checkout, all built and run by one person.">
+  <img src="/projects/gingerbros/shot-1.jpg" alt="GingerBros storefront homepage" style={{ width: "100%", height: "auto" }} />
+</Figure>
+
 <Highlights
   items={[
     { title: "Registered Thai company", body: "A proper legal entity with its own branding and packaging." },
@@ -48,6 +52,10 @@ and have to live with.
 - **The company:** a registered Thai entity.
 - **The store:** the storefront and everything behind the "buy" button.
 
+<Figure caption="Real-time cart with a free-shipping progress bar and referral codes, before handing off to checkout.">
+  <img src="/projects/gingerbros/shot-2.jpg" alt="GingerBros cart drawer with subtotal and free shipping progress" style={{ width: "100%", height: "auto" }} />
+</Figure>
+
 ## Handling payments properly
 
 As an engineer, the part I care about most is handling money safely.
@@ -56,6 +64,10 @@ As an engineer, the part I care about most is handling money safely.
 data as a PCI-DSS-compliant processor. I chose that on purpose. The safest way to handle card
 data is to design the system so you never have it. Keeping it entirely off my infrastructure
 keeps my PCI scope as small as it can be and removes a whole category of risk.
+
+<Figure caption="Checkout hands off to Stripe's own hosted payment page — card data never reaches my servers.">
+  <img src="/projects/gingerbros/shot-3.jpg" alt="Stripe-hosted checkout page for a GingerBros order" style={{ width: "100%", height: "auto" }} />
+</Figure>
 
 **Payment confirmations are verified before they're trusted.** Payment results arrive as
 Stripe **webhooks**, and each one has its signature checked before the store acts on it. A

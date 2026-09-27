@@ -30,6 +30,10 @@ There are two apps in one: a **customer** side for finding and buying food, and 
 side for running a shop's listings and orders. It runs on iOS, Android, and the web from one
 codebase, in English and Thai, with light and dark modes.
 
+<Figure caption="Onboarding shows the two ways in — sign up for real, or jump straight into a seeded test account.">
+  <img src="/projects/maithing/shot-1.jpg" alt="MaiThing welcome and onboarding screen" style={{ width: "100%", height: "auto" }} />
+</Figure>
+
 <Highlights
   items={[
     { title: "Two-sided app", body: "Separate customer and merchant experiences, each with its own navigation and tools." },
@@ -46,11 +50,23 @@ everything on a map, save favorites, and check out a multi-item cart. Each order
 pickup code and directions to the shop, and there's a wallet with balance and transaction
 history.
 
+<Figure caption="The customer home feed: nearby surprise bags, a running savings tally, and category browsing.">
+  <img src="/projects/maithing/shot-2.jpg" alt="MaiThing customer home feed with nearby deals" style={{ width: "100%", height: "auto" }} />
+</Figure>
+
+<Figure caption="Nearby shops on a PostGIS-backed map, ranked by distance with ratings and follower counts.">
+  <img src="/projects/maithing/shot-3.jpg" alt="MaiThing map view with nearby merchants" style={{ width: "100%", height: "auto" }} />
+</Figure>
+
 **Merchants** get a dashboard with sales analytics, inventory management, and a form to
 create, edit, or duplicate listings. They can scan customers' pickup codes, message
 customers, manage payouts and bank accounts, run promotions and coupons, see their reviews,
 add staff, set store hours and pickup windows, broadcast messages to followers, and go
 through business verification.
+
+<Figure caption="The merchant dashboard: revenue, verification progress, unread customer messages, and quick actions.">
+  <img src="/projects/maithing/shot-4.jpg" alt="MaiThing merchant dashboard" style={{ width: "100%", height: "auto" }} />
+</Figure>
 
 The backend handles some of the housekeeping on its own. Orders are stamped with a completion
 time when they're collected, and orders that aren't picked up within the pickup window are

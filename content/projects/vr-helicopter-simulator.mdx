@@ -42,6 +42,10 @@ A simulator like this is really two programs, a client and a game server, and th
 stay in step in real time. If they drift apart, the simulation stops feeling real. I took on
 the communication layer between them.
 
+<Figure caption="Multiplayer flight over synced terrain, with a picture-in-picture view showing the second client's state.">
+  <img src="/projects/vr-helicopter-simulator/shot-1.jpg" alt="VR helicopter simulator showing synced multiplayer flight over terrain" style={{ width: "100%", height: "auto" }} />
+</Figure>
+
 We compared options for that layer and chose **WebSockets**. Building it properly meant
 getting a solid grip on networking fundamentals:
 
@@ -51,6 +55,10 @@ getting a solid grip on networking fundamentals:
   nothing arrives ambiguous or malformed.
 - **State synchronization:** keeping the client's and server's view of the world consistent
   in real time, which is the hardest part of anything multiplayer or simulated.
+
+<Figure caption="The motion platform hardware driving the sim, with waypoint sectors marked on the synced view.">
+  <img src="/projects/vr-helicopter-simulator/shot-2.jpg" alt="VR helicopter simulator motion platform hardware with waypoint sector marker" style={{ width: "100%", height: "auto" }} />
+</Figure>
 
 ## Why I still include it
 

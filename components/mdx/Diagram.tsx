@@ -3,9 +3,9 @@ import { ReactNode } from "react";
 function ZeroTrustSVG() {
   return (
     <svg
-      viewBox="0 0 720 440"
+      viewBox="0 0 720 460"
       role="img"
-      aria-label="Zero-trust request path from the internet through Cloudflare Tunnel and Authentik to services on a Proxmox host."
+      aria-label="Zero-trust request path from the internet through Cloudflare Tunnel and Cloudflare Access to a Guacamole gateway and other services on an Ubuntu host."
       style={{ width: "100%", height: "auto", display: "block" }}
     >
       <defs>
@@ -119,7 +119,7 @@ function ZeroTrustSVG() {
           markerEnd="url(#diagram-arrow)"
         />
 
-        {/* Authentik */}
+        {/* Cloudflare Access */}
         <rect
           x="240"
           y="180"
@@ -137,7 +137,7 @@ function ZeroTrustSVG() {
           fontSize="13"
           fontWeight="500"
         >
-          Authentik
+          Cloudflare Access
         </text>
         <text
           x="360"
@@ -146,10 +146,10 @@ function ZeroTrustSVG() {
           fill="var(--muted)"
           fontSize="11"
         >
-          forward-auth SSO
+          identity check on every hostname
         </text>
 
-        {/* Access approval box */}
+        {/* Identity provider box */}
         <rect
           x="520"
           y="180"
@@ -162,25 +162,25 @@ function ZeroTrustSVG() {
         />
         <text
           x="610"
-          y="206"
+          y="202"
           textAnchor="middle"
           fill="var(--text)"
           fontSize="12"
           fontWeight="500"
         >
-          access approval
+          Google SSO
         </text>
         <text
           x="610"
-          y="224"
+          y="218"
           textAnchor="middle"
           fill="var(--muted)"
           fontSize="10"
         >
-          via messaging app
+          or emailed one-time code
         </text>
 
-        {/* Approval arrow */}
+        {/* Identity arrow */}
         <line
           x1="520"
           y1="208"
@@ -200,12 +200,12 @@ function ZeroTrustSVG() {
           markerEnd="url(#diagram-arrow)"
         />
 
-        {/* Proxmox host */}
+        {/* Ubuntu host */}
         <rect
           x="80"
           y="268"
           width="560"
-          height="156"
+          height="176"
           rx="16"
           fill="var(--surface)"
           stroke="var(--border)"
@@ -218,78 +218,105 @@ function ZeroTrustSVG() {
           fontSize="13"
           fontWeight="500"
         >
-          Proxmox host: Intel N150, headless Linux
+          Ubuntu host: headless Intel N100, Docker
         </text>
 
         {/* Services */}
         <rect
           x="120"
-          y="324"
+          y="322"
           width="136"
-          height="44"
+          height="56"
           rx="8"
           fill="var(--bg)"
-          stroke="var(--border)"
+          stroke="var(--accent)"
         />
         <text
           x="188"
-          y="351"
+          y="345"
           textAnchor="middle"
           fill="var(--text)"
           fontSize="12"
           fontWeight="500"
         >
-          Nextcloud
+          Guacamole
+        </text>
+        <text
+          x="188"
+          y="362"
+          textAnchor="middle"
+          fill="var(--muted)"
+          fontSize="8"
+        >
+          Kali · DVWA · Juice Shop
         </text>
 
         <rect
           x="292"
-          y="324"
+          y="322"
           width="136"
-          height="44"
+          height="56"
           rx="8"
           fill="var(--bg)"
           stroke="var(--border)"
         />
         <text
           x="360"
-          y="351"
+          y="345"
           textAnchor="middle"
           fill="var(--text)"
           fontSize="12"
           fontWeight="500"
         >
-          Immich
+          Supabase
+        </text>
+        <text
+          x="360"
+          y="362"
+          textAnchor="middle"
+          fill="var(--muted)"
+          fontSize="9"
+        >
+          self-hosted
         </text>
 
         <rect
           x="464"
-          y="324"
+          y="322"
           width="136"
-          height="44"
+          height="56"
           rx="8"
           fill="var(--bg)"
           stroke="var(--border)"
         />
         <text
           x="532"
-          y="351"
+          y="345"
           textAnchor="middle"
           fill="var(--text)"
           fontSize="12"
           fontWeight="500"
         >
-          Grafana
+          ocis + OnlyOffice
+        </text>
+        <text
+          x="532"
+          y="362"
+          textAnchor="middle"
+          fill="var(--muted)"
+          fontSize="9"
+        >
+          files &amp; docs
         </text>
 
         <text
           x="360"
-          y="392"
+          y="412"
           textAnchor="middle"
           fill="var(--muted)"
           fontSize="11"
         >
-          + other Docker services
+          + SearXNG and other Docker services
         </text>
       </g>
     </svg>

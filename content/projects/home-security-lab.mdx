@@ -2,10 +2,10 @@
 slug: home-security-lab
 name: Home Security Lab
 kind: "Infrastructure / Zero Trust"
-tagline: "Self-hosted infrastructure with no open ports, where every service sits behind single sign-on."
-contribution: "Designed and run a zero-trust homelab: Cloudflare Tunnel, Authentik SSO, out-of-band access approval, and containerized services on a low-power host."
+tagline: "Self-hosted infrastructure with no open ports, where even the practice targets sit behind an access gate."
+contribution: "Designed and run a zero-trust homelab: Cloudflare Tunnel, Cloudflare Access, a browser-only gateway into an isolated pentest range, and containerized services on a low-power host."
 order: 2
-stack: [Proxmox, Authentik, Cloudflare Tunnel, Docker, Linux]
+stack: [Ubuntu, Docker, Cloudflare Tunnel, Cloudflare Access, Guacamole]
 links: {}
 theme:
   bg: "#070b08"
@@ -22,59 +22,68 @@ theme:
 ## Overview
 
 My home lab is where I practice the defensive side of security on infrastructure I own and
-control. It runs services I use every day, but the part I spend the most time on is the access
-model in front of them. The rule is simple: nothing is exposed to the internet directly, and
-nothing is trusted just because it's on the network.
+control. It runs services I use every day, plus an isolated range for offensive practice, and
+the part I spend the most time on is the access model in front of all of it. The rule is
+simple: nothing is exposed to the internet directly, and reaching the practice targets means
+going through a gate first, in the browser, every time.
 
-It runs on modest hardware: a low-power **Intel N150**, headless, all Linux. I wanted to show
-that a solid zero-trust setup comes down to architecture, and doesn't need a rack of servers.
+It runs on modest hardware: a headless **Intel N100** mini PC running plain Ubuntu and Docker
+— no hypervisor. I wanted to show that a solid zero-trust setup comes down to architecture, not
+a rack of servers.
 
 <Highlights
   items={[
     { title: "No open ports", body: "Every service reaches the internet through a Cloudflare Tunnel. The router forwards nothing inbound." },
-    { title: "Single sign-on gate", body: "Authentik forward-auth protects every service behind one identity provider." },
-    { title: "Out-of-band access", body: "New users are approved one at a time through a messaging workflow." },
-    { title: "Low-power host", body: "Intel N150 running headless Linux, Proxmox, and Docker workloads." },
+    { title: "Access gate in front of everything", body: "Cloudflare Access sits ahead of every hostname the tunnel publishes, identity-checked before any request reaches a container." },
+    { title: "Attack box behind glass", body: "The Kali box and the intentionally vulnerable targets are only reachable through a browser-based remote desktop, never directly." },
+    { title: "Low-power host", body: "A headless Intel N100 running Ubuntu and Docker Compose — no dedicated hypervisor." },
   ]}
 />
 
 ## Zero trust in practice
 
-Being on my network doesn't get a request anywhere. Every request has to prove who it belongs
-to before it reaches a service, and there's no trusted interior where that check gets
+Being on my network doesn't get a request anywhere. Every request has to clear Cloudflare
+Access before it reaches a service, and there's no trusted interior where that check gets
 skipped. Each of the decisions below follows from that.
 
 ## The access path
 
 <Diagram />
 
+<Figure caption="Reaching the lab's remote-desktop gateway means clearing Cloudflare Access first — there's nothing to reach behind it otherwise.">
+  <img src="/projects/home-security-lab/shot-1.jpg" alt="Cloudflare Access login gate in front of the lab's Guacamole gateway" style={{ width: "100%", height: "auto" }} />
+</Figure>
+
 **No open ports.** I don't forward any ports on the router. Services are only reachable
 through a **Cloudflare Tunnel**, which opens an outbound connection from inside the network.
 From the public internet there are no inbound ports to scan or probe.
 
-**Single sign-on in front of everything.** **Authentik** runs as a forward-auth proxy ahead of
-every service. A request has to be authenticated by Authentik before it's passed through to
-any app. That puts identity in one place: one set of accounts, one set of policies, and one
-place to grant or revoke someone's access to the whole lab.
+**An access gate in front of everything.** **Cloudflare Access** sits in front of every
+hostname the tunnel publishes. A request has to authenticate — through Google SSO or a
+one-time emailed code — before it's passed through to anything behind it, Guacamole included.
 
-**Access is approved out of band.** Adding a new person isn't done by leaving a door open.
-Each user is approved individually through a messaging-app workflow, so I can allow or deny
-access when the request comes in.
+**The attack box stays behind glass.** The parts of the lab built for offensive practice — a
+Kali desktop and intentionally vulnerable targets like DVWA and OWASP Juice Shop — have no
+direct network path in at all. The only way to reach them is through **Guacamole**, a
+browser-based remote desktop gateway, itself sitting behind the same Access check. There's no
+SSH or RDP port exposed to the attack box, on this network or any other.
 
 ## What runs behind it
 
-Behind the access layer is a **Proxmox** host running Docker workloads, including:
+Behind the access layer, Docker runs a mix of practice targets and services I actually use:
 
-- **Nextcloud** for files and collaboration
-- **Immich** for a private photo library
-- **Grafana** for dashboards and monitoring
-- plus other Docker workloads
+- **Guacamole** fronting an isolated **Kali** desktop, **DVWA**, and **OWASP Juice Shop** for
+  offensive practice against deliberately vulnerable targets
+- A self-hosted **Supabase** stack, the same one backing a couple of my other projects
+- **ocis** (ownCloud Infinite Scale) with **OnlyOffice** for files and collaborative editing
+- **SearXNG** as a private, self-hosted metasearch engine
 
-New services sit behind the same tunnel and SSO by default, so adding one never means opening
-a new port.
+New services sit behind the same tunnel and access gate by default, so adding one never means
+opening a new port.
 
 ## How it fits with the rest of my practice
 
-I do offensive practice on Hack The Box. The lab is the other half: somewhere to build and
-defend real infrastructure, make trade-offs, and deal with what breaks. Running forward-auth,
-tunnels, and least-privilege access every day has taught me more than reading about them did.
+I do offensive practice on Hack The Box, plus the isolated Kali range in this lab. The rest of
+the lab is the defensive half: somewhere to build and run real infrastructure, make trade-offs,
+and deal with what breaks. Running tunnels, access policies, and least-privilege gateways every
+day has taught me more than reading about them did.
