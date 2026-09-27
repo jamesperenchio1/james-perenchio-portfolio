@@ -1,12 +1,12 @@
 ---
 slug: lekha
 name: Lekha
-kind: "AI · Application Security"
-tagline: "An AI assistant that lives inside LINE — and a case study in securing an autonomous agent."
-contribution: "Designed and built the security architecture: webhook verification, identity isolation, encrypted secrets, hardened OAuth, and action guardrails."
+kind: "AI / Application Security"
+tagline: "A personal assistant that lives in LINE, and what it took to let an AI agent act on someone's Gmail and calendar safely."
+contribution: "Designed and built the whole thing, including the security architecture: webhook verification, identity binding, encrypted token storage, hardened OAuth, confirmation gates, and access control."
 order: 1
 featured: true
-stack: [TypeScript, Next.js, Vercel AI SDK, Gemini, Upstash Redis, QStash]
+stack: [TypeScript, Next.js, Vercel AI SDK, Mastra, Gemini, Upstash Redis, QStash, Stripe]
 links:
   live: https://lekha-iota.vercel.app
   code: https://github.com/assistantforyou/lekha
@@ -18,91 +18,98 @@ theme:
   muted: "#9d97c9"
   accent: "#7c6bff"
   accentText: "#0a0620"
-  display: "'Space Grotesk', sans-serif"
-  mono: "'IBM Plex Mono', monospace"
+  display: "var(--font-space-grotesk), sans-serif"
+  mono: "var(--font-plex-mono), monospace"
 ---
 
 ## Overview
 
-Lekha is a personal AI assistant you add on LINE the same way you'd add a friend. In plain
-language it remembers things for you, sets reminders, reads photos and voice memos, manages
-your Google Calendar and Drive, and can even send email from your own Gmail. There's no app
-to install and no dashboard to learn — the entire product lives inside a chat thread you
-already use every day.
+Lekha is a personal AI assistant you add on LINE like any other contact. You talk to it in
+plain language and it remembers things about you, keeps task lists, sets one-off and
+recurring reminders, searches the web, reads photos, receipts, and voice memos, manages your
+Google Calendar and Drive, and sends email from your own Gmail, attachments included. There's
+no app to install. Everything happens in a chat thread people in Thailand already use every
+day.
 
-It's live and **public**: anyone can add it, connect their own Google account, and start
-using it. That single decision — public, multi-user, and capable of taking real actions on
-your behalf — is what makes Lekha interesting from a security standpoint. It isn't a chatbot
-demo. It's an autonomous agent with hands, exposed to the open internet, which means the
-real engineering wasn't the conversation. It was making the whole thing safe to hand to
-strangers.
+Anyone can find it on LINE, but using it is gated. New users get a free trial with a daily
+limit, and after that they need a paid plan, a promo code, or my approval. Every user who gets
+through connects their own Google account, so Lekha ends up holding real credentials for real
+people and can take real actions with them. Most of the engineering time went into making
+that safe.
 
 <Highlights
   items={[
-    { title: "Public multi-user agent", body: "Live on LINE with real Gmail, Calendar, and Drive actions — not a prototype behind a login." },
-    { title: "Webhook integrity", body: "HMAC-SHA256 verification on every inbound request, compared in constant time." },
-    { title: "Secrets encrypted", body: "Google refresh tokens stored with AES-256-GCM at rest." },
-    { title: "Explicit confirmations", body: "Emails and other consequential actions require user approval before sending." },
+    { title: "Real actions, real accounts", body: "Sends Gmail, edits Calendar, and searches Drive for each user through their own connected Google account." },
+    { title: "Webhook integrity", body: "HMAC-SHA256 verification on every inbound request, compared in constant time, before any work is done." },
+    { title: "Tokens encrypted at rest", body: "Google refresh tokens are stored with AES-256-GCM." },
+    { title: "Confirm before sending", body: "Emails and calendar events are drafted and shown back verbatim. Nothing goes out until the user replies YES." },
   ]}
 />
 
-## The challenge
+## The problem
 
-An assistant that can send email and edit your calendar is only ever as trustworthy as the
-controls wrapped around it. The moment an LLM can trigger side effects, three questions stop
-being academic:
+Once a language model can send email and edit a calendar, the controls around it matter more
+than the model. I designed around three risks:
 
-- Can I trust that a request actually came from the user it claims to be from?
-- Can the user's identity be spoofed, or the model talked into acting as someone else?
-- What stops a bad instruction — or a bad day for the model — from doing something irreversible?
+- A forged request that pretends to come from LINE or from my own job queue.
+- The model being talked into acting as a different user, or into using someone else's
+  Google account.
+- A misread instruction turning into an email that can't be unsent.
 
-Lekha's architecture is my answer to those three questions. The theme throughout is
-**identity, integrity, and least privilege**.
+The approach throughout was to establish identity cryptographically, keep the model inside
+that identity, and give it as little room as possible to do irreversible things on its own.
 
 ## Security architecture
 
-**Trust at the edge — webhook integrity.**
-Every inbound request (from LINE, and from the QStash job queue) carries a cryptographic
-signature. Before Lekha does *any* work, it verifies that signature — HMAC-SHA256, computed
-over the exact raw request body, compared in constant time so the check can't be probed with
-timing. A forged or tampered request fails verification and is dropped before it ever reaches
-application logic. Nothing downstream runs on unauthenticated input.
+**Webhook integrity.**
+Every request from LINE carries an `X-Line-Signature` header. Lekha computes HMAC-SHA256 over
+the exact raw body and compares it in constant time before doing anything else, so the check
+can't be probed with timing and a tampered request is dropped before it reaches application
+code. Callbacks from the QStash job queue are verified the same way using Upstash's signature.
+Each event is also de-duplicated by its webhook event ID for ten minutes, so a replayed or
+retried request doesn't run twice.
 
-**Identity it can't be talked out of.**
-The user's identity is derived from the *verified webhook*, never from anything the model
-says or infers. The LLM can't be socially engineered — or prompt-injected — into believing
-it's talking to a different person, because identity is established cryptographically before
-the model is even in the loop. The model operates inside an identity it doesn't get a vote on.
+**Identity comes from the webhook, not the model.**
+The user ID is taken from the verified webhook and bound to the request before the model is
+involved. Tools that send or read anything use that bound ID to look up tokens. They never
+accept a user ID as an argument from the model. A prompt injection can change what the model
+says, but it can't change whose account it's operating on.
 
-**Secrets at rest.**
-Connecting your Google account means Lekha holds a long-lived refresh token — one of the most
-sensitive things a system can store. Those tokens are encrypted at rest with **AES-256-GCM**,
-so a database compromise doesn't hand an attacker standing access to users' Google accounts.
+**Refresh tokens encrypted at rest.**
+Connecting Google means storing a long-lived refresh token, which is about the most sensitive
+thing the system holds. Those tokens are encrypted with AES-256-GCM using a dedicated 32-byte
+key, so a copy of the database alone doesn't give anyone access to users' Google accounts.
 
 **A hardened OAuth flow.**
-The Google connection flow is built against CSRF and replay from the start: single-use,
-signed links and short-lived, server-side nonces mean an intercepted or reused authorization
-link is worthless. You can only complete the connection you actually started, once.
+The link that starts a Google connection is an HMAC-signed token, and the flow uses a
+server-side nonce stored in Redis with a ten-minute lifetime that can only be used once. An
+intercepted or reused link is useless, and you can only finish a connection you started
+yourself.
 
-**Guardrails on every consequential action.**
-Anything with real-world consequences — sending an email, in particular — is never executed
-straight from a model turn. It's drafted, queued, and gated behind an **explicit confirmation**:
-the exact content is shown back to you verbatim, and nothing goes out until you say yes.
-On top of that sit per-user rate limiting and webhook replay de-duplication, so a stuck retry
-or a flood of requests can't turn into a flood of actions.
+**Confirmation gate on anything visible to other people.**
+Sending an email or creating a calendar event never happens straight from a model turn. The
+model can only call draft tools, which push the action onto a per-user pending queue that
+expires after five minutes. Lekha then shows the exact draft (recipients, subject, body,
+attachments, times) and waits. A YES in English or Thai runs the queued actions. NO, or
+anything else, clears the queue.
+
+**Access control and abuse limits.**
+Every message passes an access gate first: admins, allowlisted users, and active trial users
+get through, and everyone else gets a sign-up card. There's also a per-user sliding-window
+rate limit, so a stuck retry loop or someone hammering the bot can't burn through the model
+quota or trigger a flood of actions.
 
 **Isolation between users.**
-Because it's public, every user is walled off: isolated memory, their own connected Google
-account, and individual rate limits. One person's data and permissions never bleed into
-another's.
+Memory, task lists, reminders, connected Google accounts, and rate limits are all scoped per
+user. One person's data and permissions never show up in another person's session.
 
 ## How it's built
 
-Lekha is a TypeScript app on Next.js, deployed on Vercel. It uses the Vercel AI SDK to
-orchestrate the model (Gemini), Upstash Redis for fast per-user state and memory, and QStash
-to run deferred and scheduled work — reminders, queued actions — reliably and off the request
-path. The tool layer wraps Google Calendar, Drive, and Gmail; multimodal input (photos, voice
-memos) is handled inline so you can just send a picture or talk to it.
-
-The result is an assistant that feels effortless to use and is deliberately constrained —
-which, to me, is the whole point. Useful agents need boundaries.
+Lekha is a TypeScript app on Next.js, deployed on Vercel. The LINE webhook verifies the
+signature, returns 200 right away so LINE doesn't retry, and processes the event in the
+background. The Vercel AI SDK and Mastra handle the model (Gemini) and tool calls, Upstash
+Redis holds per-user state and memory, and QStash runs scheduled work like reminders and
+scheduled emails outside the request path. The tool layer wraps Gmail, Google Calendar,
+Drive, and Contacts. Photos, voice memos, and files forwarded in LINE are handled inline, so
+you can send a picture of a receipt and ask it to log it, or forward a PDF and ask it to email
+it to someone.

@@ -24,7 +24,7 @@ export function Contact() {
         <div className="grid gap-10 md:grid-cols-2">
           <div>
             <p className="mb-6 text-lg leading-relaxed text-foreground">
-              Have a security or infrastructure challenge in mind? I’m open to roles where reliability, access control, and risk management overlap.
+              I'm looking for security and infrastructure roles, especially ones that cover access control, identity, and incident response. If you're hiring or want to talk shop, send me a message.
             </p>
             <p className="text-muted">
               Reach me directly at{" "}

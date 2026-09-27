@@ -1,0 +1,100 @@
+---
+slug: roots
+name: Roots
+kind: "Marketplace / Database Security"
+tagline: "A plant marketplace for Thai nurseries and collectors, with escrow payments and permissions enforced in the database."
+contribution: "Built the full app, then audited it before launch and moved payment, ownership, and order-status rules into Postgres row-level security and trigger guards."
+order: 8
+stack: [Next.js, React, TypeScript, Supabase, Postgres RLS, Stripe Connect, PromptPay, Vitest]
+links:
+  live: https://roots-rho-two.vercel.app
+  code: https://github.com/jamesperenchio1/roots
+theme:
+  bg: "#f4f1e6"
+  surface: "#fbf9f2"
+  border: "#d9d3bf"
+  text: "#1c2a1e"
+  muted: "#5d6b5c"
+  accent: "#2f6b3a"
+  accentText: "#f4f1e6"
+  display: "var(--font-dm-serif), serif"
+  mono: "var(--font-plex-mono), monospace"
+---
+
+## Overview
+
+Roots is a marketplace for buying and selling plants in Thailand, from everyday herbs to rare
+aroids. It's built for local nurseries and collectors. Each listed plant can get a permanent
+QR code for its physical tag, so its history follows it from seller to seller, and the market
+pages show real price history per species and size.
+
+It's a full two-sided marketplace: listings with photos, offers and counter-offers, in-app
+messaging, seller reviews, watchlists, price alerts, notifications, and a dispute process. It
+runs in Thai and English.
+
+<Highlights
+  items={[
+    { title: "Escrow payments", body: "Card payments are held in escrow and released to the seller's Stripe Connect account when the order completes." },
+    { title: "Rules in the database", body: "Order-status transitions and payment confirmations are enforced by Postgres triggers, not just the front end." },
+    { title: "Row-level security", body: "Every table has RLS policies scoped to the buyer, the seller, or an admin." },
+    { title: "Zero platform fee", body: "Sellers keep the full sale price. The fee is fixed at 0% in code." },
+  ]}
+/>
+
+## How buying works
+
+At checkout, the buyer picks how to pay:
+
+- **Stripe:** the buyer pays online through Stripe's Payment Element. The money is held in
+  escrow, and once the order is completed it's transferred to the seller's Stripe Connect
+  Express account.
+- **Direct:** the buyer and seller arrange payment in chat, for example by PromptPay. The
+  platform doesn't touch the money, and the order moves forward on each side's
+  confirmation.
+
+Orders then move through a fixed lifecycle: paid in escrow, shipped, delivered, completed,
+with branches for disputes, refunds, and cancellations. Sellers mark an order shipped with
+the courier, tracking number, and an optional photo of the packed box. For pickup orders, the
+public listing only shows a general area, and the exact GPS pin is revealed to the buyer after
+they've bought the plant.
+
+## Auditing my own app
+
+Before opening it up, I did a full production-readiness audit of the codebase, database, and
+deployment. It turned up serious problems. A buyer could mark their own payment as confirmed.
+The function that updated an order's status accepted arbitrary changes, with no check on who
+was calling it or whether the transition made sense. Some seller-only screens were only
+protected in the page itself.
+
+The underlying issue was that too many rules lived in the front end. Anyone with the public
+API key can call Supabase's REST API directly, so any rule the database doesn't enforce can
+be bypassed. I moved the important ones into Postgres:
+
+**Order status transitions are enforced by a trigger.** A `BEFORE UPDATE` trigger on
+transactions only allows valid moves (for example, from paid in escrow to shipped, disputed,
+or cancelled) and rejects everything else with an error. Only the backend service role and
+admins can override it for support cases.
+
+**Row-level security wasn't enough on its own.** RLS in Postgres decides which rows you can
+update, not which columns. The policy on transactions let either party update their own
+order, so a buyer could have written the seller's "payment received" confirmation directly.
+A trigger now checks who is changing each attestation column: only the buyer can confirm they
+sent payment, and only the seller can confirm they received it. The same gap existed on
+listings, where a seller could have given themselves a free paid boost by setting
+`boosted_until` directly. That column can now only be changed by the Stripe webhook running as
+the service role.
+
+**Every table has scoped policies.** For example, notifications are owner-only, offers can be
+read by both parties but only created by the buyer, reviews are public to read but only the
+author can write them, and disputes are visible to the two parties and admins, with only
+admins able to resolve them.
+
+**Payment webhooks are verified.** The Stripe webhook runs as a Supabase Edge Function and
+checks the signature against the raw request body before it updates any order.
+
+## Stack
+
+Next.js, React, and TypeScript with Tailwind and shadcn/ui on the front end, deployed on
+Vercel. Supabase for Postgres, auth, storage, row-level security, and Edge Functions. Stripe
+Payment Element and Connect Express for escrow and payouts. Vitest and Testing Library for
+tests.

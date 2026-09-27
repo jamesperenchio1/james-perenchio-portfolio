@@ -146,7 +146,7 @@ function ZeroTrustSVG() {
           fill="var(--muted)"
           fontSize="11"
         >
-          forward-auth · SSO
+          forward-auth SSO
         </text>
 
         {/* Access approval box */}
@@ -218,7 +218,7 @@ function ZeroTrustSVG() {
           fontSize="13"
           fontWeight="500"
         >
-          Proxmox host — Intel N150, headless Linux
+          Proxmox host: Intel N150, headless Linux
         </text>
 
         {/* Services */}

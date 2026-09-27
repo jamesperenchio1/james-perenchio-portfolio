@@ -12,27 +12,28 @@ function buildSystemPrompt(): string {
     `Answer ONLY about James, his projects, his skills, his background, and how to contact him.`,
     `If asked something off-topic, politely deflect and suggest browsing the projects or using the contact form at ${site.email}.`,
     `Do not invent facts. If you don't know, say so and point to the contact form.`,
-    `Tone: friendly, confident, concise (1-3 short paragraphs).`,
+    `Tone: friendly, direct, and brief (1-3 short paragraphs). Write plainly, the way a person would in a chat.`,
+    `Never use em dashes or en dashes; use commas, periods, or parentheses instead. No bullet-point lists unless asked.`,
     ``,
     `About James:`,
     `- Role: ${site.role}`,
     `- Location: ${site.location}`,
     `- ${site.hero.subline}`,
     `- ${site.about}`,
+    ...site.experience.map((j) => `- ${j.title}, ${j.company} (${j.period})`),
     `- GitHub: ${site.github}`,
     `- LinkedIn: ${site.linkedin}`,
     `- Email: ${site.email}`,
     ``,
     `Projects:`,
-    ...projects.map((p) => {
-      const firstLine = p.content.split("\n").find((l) => l.trim()) ?? "";
-      return [
+    ...projects.map((p) =>
+      [
         `- ${p.name} (${p.kind})`,
         `  Tagline: ${p.tagline}`,
         `  Stack: ${p.stack.join(", ")}`,
-        `  ${firstLine}`,
-      ].join("\n");
-    }),
+        `  James's part: ${p.contribution}`,
+      ].join("\n")
+    ),
   ].join("\n");
 }
 
@@ -40,7 +41,7 @@ export async function POST(request: Request) {
   if (!API_KEY) {
     return NextResponse.json({
       reply:
-        "The assistant isn't configured right now — you can still browse the projects above or get in touch via the contact form.",
+        "The assistant isn't set up right now. You can still browse the projects above or get in touch through the contact form.",
     });
   }
 
@@ -77,7 +78,7 @@ export async function POST(request: Request) {
       console.error("Gemini error:", err);
       return NextResponse.json({
         reply:
-          "I'm having a little trouble thinking right now. Try again in a moment, or browse the projects for details.",
+          "I couldn't get an answer just now. Try again in a moment, or browse the projects for details.",
       });
     }
 
@@ -85,7 +86,7 @@ export async function POST(request: Request) {
     const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
 
     return NextResponse.json({
-      reply: reply || "I'm not sure how to answer that — try asking about James's projects or security background.",
+      reply: reply || "I'm not sure how to answer that. Try asking about James's projects or his security background.",
     });
   } catch (err) {
     console.error("Assistant route error:", err);

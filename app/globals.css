@@ -27,6 +27,10 @@ html {
 }
 
 body {
+  /* Site-wide fonts. The per-font variables are set by next/font in layout.tsx;
+     project pages override these two with their own theme fonts. */
+  --font-display: var(--font-space-grotesk);
+  --font-mono: var(--font-plex-mono);
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-body), system-ui, sans-serif;

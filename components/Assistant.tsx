@@ -14,7 +14,7 @@ export function Assistant() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "model",
-      text: "Hi — I can answer questions about James, his projects, and his security work. What would you like to know?",
+      text: "Hi! I can answer questions about James, his projects, and his security work. What would you like to know?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -41,7 +41,7 @@ export function Assistant() {
         body: JSON.stringify({ messages: [...messages, userMsg] }),
       });
       const data = await res.json().catch(() => ({ reply: "Hmm, I didn't catch that. Try again?" }));
-      setMessages((m) => [...m, { role: "model", text: data.reply || data.error || "I'm not sure about that — try asking about James's projects or security work." }]);
+      setMessages((m) => [...m, { role: "model", text: data.reply || data.error || "I'm not sure about that. Try asking about James's projects or his security work." }]);
     } catch {
       setMessages((m) => [
         ...m,

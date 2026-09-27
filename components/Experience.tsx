@@ -29,7 +29,7 @@ export function Experience() {
                   <p className="text-sm font-medium text-accent">
                     {job.company}
                     {job.industry && (
-                      <span className="ml-1 font-normal text-muted">· {job.industry}</span>
+                      <span className="ml-1 font-normal text-muted">({job.industry})</span>
                     )}
                   </p>
                   <p className="text-sm text-muted">{job.location}</p>

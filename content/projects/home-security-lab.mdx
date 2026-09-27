@@ -1,9 +1,9 @@
 ---
 slug: home-security-lab
 name: Home Security Lab
-kind: "Infrastructure · Zero Trust"
-tagline: "Self-hosted infrastructure where nothing is exposed and nothing is trusted by default."
-contribution: "Architected and operate a zero-trust homelab: Cloudflare Tunnel, Authentik SSO, out-of-band access approval, and containerized services on a low-power host."
+kind: "Infrastructure / Zero Trust"
+tagline: "Self-hosted infrastructure with no open ports, where every service sits behind single sign-on."
+contribution: "Designed and run a zero-trust homelab: Cloudflare Tunnel, Authentik SSO, out-of-band access approval, and containerized services on a low-power host."
 order: 2
 stack: [Proxmox, Authentik, Cloudflare Tunnel, Docker, Linux]
 links: {}
@@ -15,69 +15,66 @@ theme:
   muted: "#6f9a80"
   accent: "#35d07f"
   accentText: "#04140b"
-  display: "'IBM Plex Mono', monospace"
-  mono: "'IBM Plex Mono', monospace"
+  display: "var(--font-plex-mono), monospace"
+  mono: "var(--font-plex-mono), monospace"
 ---
 
 ## Overview
 
-My home lab is where I practice the defensive side of security on infrastructure I fully
-own and control. It runs a real stack of self-hosted services for daily use — but the point
-isn't the services, it's the access model in front of them. The whole thing is built on one
-rule: **nothing is exposed, and nothing is trusted by default.**
+My home lab is where I practice the defensive side of security on infrastructure I own and
+control. It runs services I use every day, but the part I spend the most time on is the access
+model in front of them. The rule is simple: nothing is exposed to the internet directly, and
+nothing is trusted just because it's on the network.
 
-It also runs on deliberately modest hardware. This isn't a rack of servers — it's a
-low-power **Intel N150**, fully headless, 100% Linux. Part of the exercise is proving that
-a rigorous zero-trust setup doesn't require expensive gear; it requires the right architecture.
+It runs on modest hardware: a low-power **Intel N150**, headless, all Linux. I wanted to show
+that a solid zero-trust setup comes down to architecture, and doesn't need a rack of servers.
 
 <Highlights
   items={[
-    { title: "No open ports", body: "All services reach the internet through a Cloudflare Tunnel; the router forwards nothing inbound." },
+    { title: "No open ports", body: "Every service reaches the internet through a Cloudflare Tunnel. The router forwards nothing inbound." },
     { title: "Single sign-on gate", body: "Authentik forward-auth protects every service behind one identity provider." },
-    { title: "Out-of-band access", body: "New users are approved through a messaging workflow, not a standing open door." },
-    { title: "Low-power host", body: "Intel N150 headless Linux running Proxmox and Docker workloads." },
+    { title: "Out-of-band access", body: "New users are approved one at a time through a messaging workflow." },
+    { title: "Low-power host", body: "Intel N150 running headless Linux, Proxmox, and Docker workloads." },
   ]}
 />
 
-## The principle: zero trust
+## Zero trust in practice
 
-Zero trust means no service is reachable simply because you're "on the network." Every
-request has to prove who it belongs to first. There's no soft interior — being inside buys
-you nothing. That principle drove every decision below.
+Being on my network doesn't get a request anywhere. Every request has to prove who it belongs
+to before it reaches a service, and there's no trusted interior where that check gets
+skipped. Each of the decisions below follows from that.
 
 ## The access path
 
 <Diagram />
 
-**No open ports.** Nothing is published by forwarding ports on the router. Every service is
-reachable only through a **Cloudflare Tunnel**, which makes an outbound connection from inside
-the network. From the public internet there are simply no inbound ports to scan, probe, or
-attack — the usual front door doesn't exist.
+**No open ports.** I don't forward any ports on the router. Services are only reachable
+through a **Cloudflare Tunnel**, which opens an outbound connection from inside the network.
+From the public internet there are no inbound ports to scan or probe.
 
-**Single sign-on in front of everything.** **Authentik** sits as a forward-auth proxy ahead
-of *every single service*. Before a request is allowed through to any app, Authentik has to
-authenticate it. That centralizes identity into one place: one set of accounts, one policy
-surface, one place to allow or revoke a person's access across the whole lab.
+**Single sign-on in front of everything.** **Authentik** runs as a forward-auth proxy ahead of
+every service. A request has to be authenticated by Authentik before it's passed through to
+any app. That puts identity in one place: one set of accounts, one set of policies, and one
+place to grant or revoke someone's access to the whole lab.
 
-**Access is granted deliberately, out of band.** Letting someone in isn't a standing open
-door — it's an explicit, per-user approval handled through a messaging-app workflow, so I can
-allow or deny access on demand rather than leaving anything permanently open.
+**Access is approved out of band.** Adding a new person isn't done by leaving a door open.
+Each user is approved individually through a messaging-app workflow, so I can allow or deny
+access when the request comes in.
 
 ## What runs behind it
 
-Behind that access layer is a genuine, useful stack on a **Proxmox** host, all in Docker:
+Behind the access layer is a **Proxmox** host running Docker workloads, including:
 
-- **Nextcloud** — self-hosted files and collaboration
-- **Immich** — a private, self-hosted photo library
-- **Grafana** — dashboards and monitoring
+- **Nextcloud** for files and collaboration
+- **Immich** for a private photo library
+- **Grafana** for dashboards and monitoring
 - plus other Docker workloads
 
-Everything sits behind the same zero-trust front door, so adding a service never means
-opening a new hole — it inherits the tunnel and the SSO automatically.
+New services sit behind the same tunnel and SSO by default, so adding one never means opening
+a new port.
 
-## Why it matters
+## How it fits with the rest of my practice
 
-This is the counterpart to the offensive practice I do on Hack The Box: somewhere to build
-and defend real infrastructure, make deliberate trade-offs, and live with the consequences.
-It's the difference between reading about forward-auth, tunnels, and least-privilege access
-and actually running them every day.
+I do offensive practice on Hack The Box. The lab is the other half: somewhere to build and
+defend real infrastructure, make trade-offs, and deal with what breaks. Running forward-auth,
+tunnels, and least-privilege access every day has taught me more than reading about them did.

@@ -1,0 +1,86 @@
+---
+slug: maithing
+name: MaiThing
+kind: "Mobile App / Marketplace"
+tagline: "A surplus-food app for Thailand: shops list discounted leftovers, and customers reserve them and pick them up."
+contribution: "Built the iOS, Android, and web app with separate customer and merchant sides, the Supabase backend and its RLS policies, and the testing and CI setup for an App Store launch."
+order: 10
+stack: [Expo, React Native, TypeScript, Supabase, PostGIS, TanStack Query, Zustand, Maestro]
+links:
+  code: https://github.com/jamesperenchio1/MaiThing
+theme:
+  bg: "#fff4ec"
+  surface: "#ffffff"
+  border: "#f3d6c4"
+  text: "#2b1a12"
+  muted: "#7a5a48"
+  accent: "#d0412a"
+  accentText: "#ffffff"
+  display: "var(--font-outfit), sans-serif"
+  mono: "var(--font-plex-mono), monospace"
+---
+
+## Overview
+
+MaiThing is a mobile marketplace for surplus food in Thailand, similar to Too Good To Go or
+Yindii. Food businesses list food they'd otherwise throw away at a discount,
+and customers nearby reserve it and pick it up themselves.
+
+There are two apps in one: a **customer** side for finding and buying food, and a **merchant**
+side for running a shop's listings and orders. It runs on iOS, Android, and the web from one
+codebase, in English and Thai, with light and dark modes.
+
+<Highlights
+  items={[
+    { title: "Two-sided app", body: "Separate customer and merchant experiences, each with its own navigation and tools." },
+    { title: "QR pickup", body: "Customers show a QR code at the counter, and merchants scan it in the app to hand over the order." },
+    { title: "Location-aware", body: "Map and nearby search backed by PostGIS in Supabase." },
+    { title: "Tested end to end", body: "Maestro UI flows, Jest, strict TypeScript, and lint checks in CI." },
+  ]}
+/>
+
+## What each side can do
+
+**Customers** can browse nearby shops and deals on a home feed, search and filter, see
+everything on a map, save favorites, and check out a multi-item cart. Each order gets a QR
+pickup code and directions to the shop, and there's a wallet with balance and transaction
+history.
+
+**Merchants** get a dashboard with sales analytics, inventory management, and a form to
+create, edit, or duplicate listings. They can scan customers' pickup codes, message
+customers, manage payouts and bank accounts, run promotions and coupons, see their reviews,
+add staff, set store hours and pickup windows, broadcast messages to followers, and go
+through business verification.
+
+The backend handles some of the housekeeping on its own. Orders are stamped with a completion
+time when they're collected, and orders that aren't picked up within the pickup window are
+marked as no-shows automatically.
+
+## Backend and access control
+
+The app talks to **Supabase**: Postgres with PostGIS for location queries, auth, storage, and
+an Edge Function for push notifications. The data layer sits behind repository interfaces,
+so the whole app could run against mock data during development and switch to the real
+backend with a config flag.
+
+When I switched it to the real backend, I found that 16 tables had row-level security enabled
+but no policies at all. Postgres treats that as "deny everything", so those features (chat,
+favorites, push tokens, promotions, and others) were quietly failing. I wrote policies for
+each one based on who should actually have access. Profiles and push tokens are owner-only,
+merchants can only change their own organization, locations, and listings, public shop and
+listing data is readable by everyone, and the audit log can't be read by any client.
+
+## Getting it ready to ship
+
+For the App Store launch I set up the EAS build project, added the iOS permission
+descriptions for location and the photo library, and published a separate site for the
+privacy policy and support pages. Quality checks include Maestro UI flows, Jest tests, strict
+TypeScript, accessibility linting, Husky pre-commit hooks, and a CI pipeline that runs type
+checks, lint, and formatting.
+
+## Stack
+
+Expo SDK 57 with React Native 0.86 and React 19, Expo Router, TypeScript in strict mode,
+NativeWind for styling, TanStack Query and Zustand for state, React Hook Form with Zod for
+forms, Reanimated for animation, i18next for Thai and English, react-native-maps (with
+Leaflet on web), and Supabase with PostGIS on the backend.

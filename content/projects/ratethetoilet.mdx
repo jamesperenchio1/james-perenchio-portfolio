@@ -1,0 +1,97 @@
+---
+slug: ratethetoilet
+name: RateTheToilet
+kind: "Privacy / Self-hosted Backend"
+tagline: "A crowdsourced map of Bangkok's public toilets that works without accounts, backed by Supabase I host myself."
+contribution: "Built the app and designed the account-less identity model, recovery codes, database-level rate limits and moderation, and the self-hosted Supabase backend behind Cloudflare Tunnel."
+order: 9
+stack: [React, TypeScript, Vite, MapLibre GL, Supabase (self-hosted), Postgres RLS, Cloudflare Tunnel]
+links:
+  live: https://ratethetoilet.vercel.app
+  code: https://github.com/jamesperenchio1/ratethetoilet
+theme:
+  bg: "#eef6f7"
+  surface: "#ffffff"
+  border: "#cfe3e6"
+  text: "#0f2a30"
+  muted: "#557077"
+  accent: "#0b8193"
+  accentText: "#ffffff"
+  display: "var(--font-bricolage), sans-serif"
+  mono: "var(--font-jetbrains-mono), monospace"
+---
+
+## Overview
+
+RateTheToilet is a map of public toilets in Bangkok that anyone can add to and review. The
+working name was "hongnam", from ห้องน้ำ, the Thai word for restroom. You open the map, find
+the nearest toilet, check how clean it is, and leave a rating or a photo if you want. It's a
+progressive web app, so it installs on your phone like a normal app.
+
+The interesting constraint was that nobody signs up to review a toilet. If posting a rating
+needs an account, most people won't bother. So the app lets people contribute without
+creating one, while still giving each person a stable identity that moderation, rate limits,
+and permissions can rely on.
+
+<Highlights
+  items={[
+    { title: "No sign-up wall", body: "Your first post gets you an automatic handle backed by an anonymous Supabase auth user." },
+    { title: "Hashed recovery codes", body: "A human-readable code gets you back in on a new device. Only its SHA-256 hash is stored." },
+    { title: "Limits in the database", body: "Posting limits, bans, and length caps are enforced by Postgres triggers and RLS." },
+    { title: "Self-hosted backend", body: "Supabase runs in Docker on my home server and is reached through a Cloudflare Tunnel." },
+  ]}
+/>
+
+## Identity without accounts
+
+The first time someone posts, they get an automatic handle like `toilet_user51`. Behind it is
+a Supabase anonymous-auth user with a stable internal ID. Renaming yourself only changes the
+display handle. The ID stays the same, and every toilet, review, and photo belongs to that ID
+rather than to the device.
+
+People still need a way back if they clear their browser or switch phones, and I didn't want
+that to mean a password. There are two options:
+
+- **Email magic link.** Adding an email to the anonymous session lets you sign in on another
+  device and pick up the same identity. The email is only used for that link.
+- **Recovery code.** A short code like `HONG-7K4P-9QX2` that you can write down. The database
+  stores only a SHA-256 hash of it, so a leaked database doesn't expose working codes. Codes
+  are redeemed through an Edge Function running with the service role, which is the only thing
+  allowed to read that table. The browser can never list them.
+
+## Keeping an open platform clean
+
+Anyone can post, so abuse controls have to be enforced where users can't get around them:
+
+- **Rate limits in Postgres.** A trigger on toilets and reviews limits each user to 10 posts
+  per rolling hour. Because it runs in the database, calling the API directly doesn't help.
+- **Bans through RLS.** Insert policies check an `is_banned` flag, so a banned user's writes
+  are rejected by the database itself.
+- **Reports that hide content automatically.** Each person can report a given item once, and
+  once three different people report it, it's hidden for everyone until an admin reviews it.
+  Admins get a report queue with resolve, dismiss, hide, and ban actions.
+- **Upload and input limits.** The photo bucket only accepts image types up to 15 MB, and
+  free-text fields have length caps, which stops the storage from being used as a dumping
+  ground.
+
+Ratings are crowdsourced too. Every toilet can have many ratings, each with a required overall
+score and optional details like cleanliness and smell, so one person's opinion doesn't become
+the toilet's permanent score.
+
+## Running the backend myself
+
+The frontend is a Vite and React PWA on Vercel, using MapLibre GL with OpenFreeMap tiles. The
+backend is a self-hosted Supabase stack (Postgres, Auth, PostgREST, and Storage) running in
+Docker Compose on my home server. It's exposed only through a Cloudflare Tunnel, so there are
+no open ports on my network.
+
+Running it myself means handling the operations work too. Schema and RLS changes are
+versioned in the repo, and an apply script records which migrations have already run in a
+table on the database itself, so it's safe to re-run. A backup script dumps the whole
+database to timestamped, gzipped files and prunes old ones after a set number of days.
+
+## Stack
+
+React, TypeScript, and Vite with a PWA plugin on the front end, MapLibre GL for the map,
+self-hosted Supabase (Postgres, Auth, PostgREST, Storage, Edge Functions) for the backend,
+and Cloudflare Tunnel in front of it.

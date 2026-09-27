@@ -2,8 +2,8 @@
 slug: vr-helicopter-simulator
 name: VR Helicopter Simulator
 kind: "Real-time Networking"
-tagline: "A VR helicopter simulator, and the real-time networking that made it work."
-contribution: "Owned the client–server communication layer using WebSockets: persistent connections, message framing, and real-time state synchronization for a six-person Scrum team."
+tagline: "A VR helicopter simulator, and the real-time networking that kept it in sync."
+contribution: "Owned the client-server communication layer using WebSockets (persistent connections, message framing, and real-time state sync) on a six-person Scrum team."
 order: 6
 stack: [Unity, "C#", WebSockets]
 links:
@@ -16,50 +16,49 @@ theme:
   muted: "#6f97a4"
   accent: "#38e0c8"
   accentText: "#032019"
-  display: "'Space Grotesk', sans-serif"
-  mono: "'IBM Plex Mono', monospace"
+  display: "var(--font-space-grotesk), sans-serif"
+  mono: "var(--font-plex-mono), monospace"
 ---
 
 ## Overview
 
-A VR-compatible helicopter flight simulator, built by a **six-person team** working in Scrum,
-and presented to **Boeing** and other aerospace industry leaders. It's a team project — my
-piece of it was the part that made a multi-component simulator actually behave like one system:
-the real-time communication between the client and the game server.
+A VR-compatible helicopter flight simulator built by a **six-person team** working in Scrum,
+and presented to **Boeing** and other aerospace industry leaders. It was a team project. My
+part was the communication between the client and the game server, which is what let the
+separate pieces run as one system.
 
 <Highlights
   items={[
-    { title: "Presented to Boeing", body: "Demoed to aerospace industry leaders including Boeing representatives." },
-    { title: "Six-person Scrum team", body: "Built collaboratively using agile sprints and regular delivery checkpoints." },
-    { title: "Real-time networking", body: "WebSocket layer keeping client and server in sync during flight." },
-    { title: "VR-compatible", body: "Unity and C# simulator built for immersive helicopter flight training." },
+    { title: "Presented to Boeing", body: "Demoed to aerospace industry leaders, including Boeing representatives." },
+    { title: "Six-person Scrum team", body: "Built in agile sprints with regular delivery checkpoints." },
+    { title: "Real-time networking", body: "A WebSocket layer that kept the client and server in sync during flight." },
+    { title: "VR-compatible", body: "A Unity and C# simulator built for immersive helicopter flight training." },
   ]}
 />
 
-## My focus: how the client talks to the server
+## My focus: client-server communication
 
-A simulator like this isn't one program — it's a client and a game server that have to stay
-in lock-step in real time. If they drift, the whole illusion falls apart. The problem I took
-on was the communication layer between them.
+A simulator like this is really two programs, a client and a game server, and they have to
+stay in step in real time. If they drift apart, the simulation stops feeling real. I took on
+the communication layer between them.
 
-We researched the options for that layer and landed on **WebSockets**, and building it well
-meant getting a genuine handle on networking fundamentals:
+We compared options for that layer and chose **WebSockets**. Building it properly meant
+getting a solid grip on networking fundamentals:
 
-- **Persistent connections** — keeping a live, low-latency channel open between client and
-  server rather than paying setup cost on every message.
-- **Message framing** — defining how state updates are structured and parsed on both ends so
-  nothing is ambiguous or malformed.
-- **State synchronization** — keeping client and server views of the world consistent in real
-  time, which is the hard part of anything multiplayer or simulated.
+- **Persistent connections:** keeping a live, low-latency channel open between client and
+  server instead of paying the setup cost on every message.
+- **Message framing:** defining how state updates are structured and parsed on both ends, so
+  nothing arrives ambiguous or malformed.
+- **State synchronization:** keeping the client's and server's view of the world consistent
+  in real time, which is the hardest part of anything multiplayer or simulated.
 
-## Why it still matters to me
+## Why I still include it
 
-It's a satisfying thread back to the aerospace world I work in now — but the deeper reason I
-keep it is that the fundamentals under a game are the same ones under everything else. The
-skills that keep a helicopter sim's client and server in sync are the same networking skills
-that sit under real infrastructure and security work.
+It connects to the aerospace work I do now. It's also where I first worked seriously with
+the networking basics (connections, framing, keeping state consistent) that I rely on in
+infrastructure and security work today.
 
 ## Stack
 
-Unity and C# for the simulator, WebSockets for the real-time client–server layer. Delivered
-by a six-person team using Scrum.
+Unity and C# for the simulator, and WebSockets for the real-time client-server layer.
+Delivered by a six-person team using Scrum.

@@ -1,0 +1,87 @@
+---
+slug: bangkok-transit
+name: Bangkok Transit
+kind: "Maps / Routing"
+tagline: "An interactive map of every Bangkok rail line with route finding, transfers, and live BTS arrivals."
+contribution: "Built the app, the station and track data pipeline, the routing graph, and the caching layer for live arrival times."
+order: 11
+stack: [Next.js, React, TypeScript, Leaflet, Upstash Redis, Tailwind CSS]
+links:
+  live: https://bangkok-transit.vercel.app
+  code: https://github.com/jamesperenchio1/bangkok_transit
+theme:
+  bg: "#0c1116"
+  surface: "#131b22"
+  border: "#22313c"
+  text: "#e6edf2"
+  muted: "#8a9ba8"
+  accent: "#7bc043"
+  accentText: "#0b1a04"
+  display: "var(--font-archivo), sans-serif"
+  mono: "var(--font-jetbrains-mono), monospace"
+---
+
+## Overview
+
+Bangkok Transit is a map of the city's whole rail network: BTS Sukhumvit and Silom, MRT Blue
+and Purple, the Gold, Yellow, and Pink monorails, the Airport Rail Link, and the SRT Red
+Lines. That's 193 stations. You tap a station to set where you're starting, tap another for
+your destination, and confirm. The route is highlighted on the map with each line change
+marked, everything else fades out, and your live location stays on screen the whole time.
+
+For BTS stations it also shows live arrival times. It installs as a PWA, so it works like an
+app on your phone.
+
+<Highlights
+  items={[
+    { title: "Every operating line", body: "193 stations across BTS, MRT, the monorails, Airport Rail Link, and SRT Red." },
+    { title: "Real track geometry", body: "Lines follow the actual curves of the track, taken from Bangkok's city GIS data." },
+    { title: "Automatic transfers", body: "Walking transfers are found automatically between stations on different lines within about 400 m." },
+    { title: "Cached live arrivals", body: "BTS arrival times are cached in memory and Redis so the page stays fast." },
+  ]}
+/>
+
+## Station and track data
+
+There isn't one clean dataset for Bangkok's rail network, so I built one. BTS and the
+monorail stations started from hand-curated codes. MRT, the Airport Rail Link, and SRT Red
+came from the Bangkok Metropolitan Administration's public ArcGIS service, which I pulled
+once with a script and converted into station records. That data had real problems: Siam was
+only tagged with one of its two lines, and English names were missing entirely, so those were
+filled in by hand. None of the sources give stop order either, so the ordered stop list for
+every line is hand-verified.
+
+The lines on the map follow the real track, not straight lines between stations. A build
+script turns the city's line geometry into curved segments, and when a route is highlighted
+the app finds the exact piece of track between each pair of adjacent stations.
+
+## Routing
+
+The routing graph is built from the station list and the stop sequences. Each line adds edges
+between neighboring stops, and the MRT Blue Line gets an extra edge because it runs as a loop.
+Stations like Siam that serve more than one line are a single node, so changing lines there
+needs no special handling. For stations that are separate but close together, like Mo Chit on
+the BTS and Chatuchak Park on the MRT, the app adds walking transfers automatically for any
+pair within about 400 meters, so there's no list of interchanges to maintain by hand. A
+shortest-path search then finds the route, and transfer steps tell you which direction to
+board.
+
+## Live arrivals
+
+BTS arrival times come from an undocumented API that doesn't allow browser requests, so the
+app proxies it through its own API routes. One upstream call takes about two seconds and
+there's no batch endpoint, so fetching all 61 BTS stations on every page load wasn't an
+option.
+
+Reads go through three tiers: module memory, then Upstash Redis, then the upstream API. The
+bulk endpoint never waits on upstream at all. It returns whatever is cached and refreshes
+stations in the background, writing each one to Redis as it arrives. Concurrent requests for
+the same station are collapsed into a single upstream call. A scheduled GitHub Actions job
+also pings every station about every 12 minutes, so the first visitor after a quiet period
+doesn't hit a cold cache. The interval is set by Upstash's free-tier command limit.
+
+## Stack
+
+Next.js 16, React 19, and TypeScript, Tailwind CSS v4, Leaflet with OpenStreetMap tiles,
+Upstash Redis for caching, a Serwist service worker for the PWA, and GitHub Actions for the
+keep-warm job. Deployed on Vercel.

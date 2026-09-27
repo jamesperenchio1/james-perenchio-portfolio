@@ -1,9 +1,9 @@
 ---
 slug: passclass
 name: PassClass
-kind: "AI · Data Privacy"
-tagline: "Turn a semester of lectures into summaries and quizzes — grounded in the lecturer's own material."
-contribution: "Worked as part of the team on the AWS ingestion pipeline and privacy-by-design RAG approach that won Best Use of Redactive AI at UniHack 2024."
+kind: "AI / Data Privacy"
+tagline: "Turns a semester of lectures into summaries and quizzes, grounded in the lecturer's own material."
+contribution: "Worked on the team that built the AWS ingestion pipeline and privacy-focused retrieval approach, which won Best Use of Redactive AI at UniHack 2024."
 order: 4
 stack: [Python, AWS S3, AWS Textract, AWS Transcribe, Confluence, OpenAI, Redactive, Flask]
 links:
@@ -17,61 +17,60 @@ theme:
   muted: "#5f6b7a"
   accent: "#2f6bd8"
   accentText: "#ffffff"
-  display: "'Fraunces', serif"
-  mono: "'IBM Plex Mono', monospace"
+  display: "var(--font-fraunces), serif"
+  mono: "var(--font-plex-mono), monospace"
 ---
 
 ## Overview
 
-PassClass turns a semester of lectures into study material. Feed it lecture videos and slide
-decks and it produces digestible summaries plus a built-in quizzing function to test yourself
-against — all grounded in the lecturer's *actual* material rather than the open internet.
+PassClass turns a semester of lectures into study material. You give it lecture recordings
+and slide decks, and it produces short summaries plus a quiz you can test yourself with. The
+answers come from the lecturer's actual material, not from whatever the model picked up on
+the open internet.
 
-It was built at a hackathon and won **Best Use of Redactive AI at UniHack 2024**. I worked
-on it as part of the team.
+We built it at a hackathon and it won **Best Use of Redactive AI at UniHack 2024**. I was one
+of the team members who built it.
 
 <Highlights
   items={[
-    { title: "UniHack 2024 winner", body: "Best Use of Redactive AI — recognized for the privacy-by-design retrieval approach." },
-    { title: "Multi-modal ingestion", body: "AWS Transcribe for audio, AWS Textract for slides, AWS S3 for storage." },
-    { title: "Permission-aware RAG", body: "Redactive scopes retrieval so only relevant, authorized chunks reach the model." },
-    { title: "Grounded answers", body: "Summaries and quizzes come from the lecturer's real content, not general LLM knowledge." },
+    { title: "UniHack 2024 winner", body: "Best Use of Redactive AI, awarded for the privacy-focused retrieval approach." },
+    { title: "Multi-format ingestion", body: "AWS Transcribe for audio, AWS Textract for slides, AWS S3 for storage." },
+    { title: "Permission-aware RAG", body: "Redactive limits retrieval so only relevant, authorized chunks reach the model." },
+    { title: "Grounded answers", body: "Summaries and quizzes come from the lecturer's content, not general model knowledge." },
   ]}
 />
 
 ## How it works
 
-The pipeline takes messy, mixed-media course content and turns it into a clean, queryable
-knowledge base:
+The pipeline takes messy, mixed-format course content and turns it into a knowledge base you
+can query:
 
-- **Audio → text** with **AWS Transcribe**, so spoken lectures become searchable text.
-- **Slides → text** with **AWS Textract**, pulling the content out of decks and PDFs.
-- **Storage** on **AWS S3** for the raw and processed material.
-- **Knowledge base** in **Confluence**, which holds the structured, extracted content.
-- **Front end** in **Flask** — a simple interface to summarize and quiz.
+- **Audio to text** with **AWS Transcribe**, so recorded lectures become searchable text.
+- **Slides to text** with **AWS Textract**, pulling content out of decks and PDFs.
+- **Storage** on **AWS S3** for the raw and processed files.
+- **Knowledge base** in **Confluence**, which holds the extracted, structured content.
+- **Front end** in **Flask**, a simple interface for summaries and quizzes.
 
-On top of that sits the language model that writes the summaries and generates quiz questions.
+A language model sits on top of that and writes the summaries and quiz questions.
 
-## The part that won the award: privacy by design
+## Privacy by design
 
-The obvious way to build this is to shovel all the lecture content straight into a general
-LLM and ask it for summaries. That's also the wrong way — it hands proprietary university
-material wholesale to a third-party model.
+The quick way to build this would be to paste all the lecture content into a general-purpose
+LLM and ask for summaries. That also hands a university's course material, in bulk, to a
+third-party model.
 
-PassClass does it differently. It uses **Redactive's permission-aware RAG** to retrieve only
-the relevant chunks of the lecturer's material and feed *just those* to the model. Two things
-fall out of that decision:
+PassClass uses **Redactive's permission-aware RAG** instead. It retrieves only the relevant
+chunks of the lecturer's material and sends just those to the model. That has two effects:
 
-- **Answers stay grounded.** Responses are anchored in the lecturer's real content, not the
-  model's general knowledge, so they're accurate to the course.
-- **Data stays controlled.** Because retrieval is permission-aware and scoped, proprietary
-  content isn't dumped indiscriminately into an open third-party LLM.
+- **Answers stay grounded.** Responses are based on what the lecturer actually taught, so
+  they match the course.
+- **Data stays controlled.** Retrieval is scoped and permission-aware, so course content isn't
+  sent wholesale to an outside model.
 
-It's a small but real privacy-by-design decision — and it's exactly what the project was
-recognized for.
+That design choice is what the judges recognized.
 
 ## Stack
 
-Python throughout, AWS (S3 / Textract / Transcribe) for ingestion, Confluence as the
-datastore, OpenAI for generation, Redactive for permission-aware retrieval, and Flask for
-the interface.
+Python throughout, AWS (S3, Textract, Transcribe) for ingestion, Confluence as the data
+store, OpenAI for generation, Redactive for permission-aware retrieval, and Flask for the
+interface.
